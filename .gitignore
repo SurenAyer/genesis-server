@@ -1,0 +1,10 @@
+dist/
+npm-debug.log
+.project
+logs
+coverage
+jsconfig.json
+.vscode
+chaincode/vendor/
+debug.log
+node_modules/

@@ -1,0 +1,1382 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Documentation of Genesis Server",
+        "description": "Detailed documentation of apis in Genesis with Swagger. This project establishes a new genotype database specifically tailored for the needs of genebank genomics. It handles very large amounts of data. It uses Express Server and is integrated with Apache Cassandra Database.",
+        "contact": {
+            "name": "Team Genesis",
+            "email": "Surendra.Ayer@outlook.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:3000",
+            "description": "Genesis Back-end server"
+        }
+    ],
+    "tags": [
+        {
+            "name": "Login",
+            "description": "APIs for login"
+        },
+        {
+            "name": "MetaData",
+            "description": "APIs for Processing Metadata of VCF File"
+        },
+        {
+            "name": "Variant",
+            "description": "APIs for Processing Variant Information of VCF File"
+        },
+        {
+            "name": "BRAPI",
+            "description": "BRAPI is a standardized RESTful web service API specification for exchanging plant breeding data between information systems. It is a shared, open API, to be used by all data providers and data consumers who wish to use the BRAPI standard."
+        }
+    ],
+    "paths": {
+        "/genesis/rest/login": {
+            "post": {
+                "tags": [
+                    "Login"
+                ],
+                "description": "To Login and get the access token",
+                "requestBody": {
+                    "required": true,
+                    "description": "User Information is checked and access token is generated",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/loginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login Successful!!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/loginResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal Error"
+                    }
+                }
+            }
+        },
+        "/genesis/rest/vcf/metadata/process": {
+            "post": {
+                "tags": [
+                    "MetaData"
+                ],
+                "description": "To Upload MetaData Information of VCF File",
+                "requestBody": {
+                    "required": true,
+                    "description": "Header Lines are stored in the database",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/processMetaDataRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "MetaData Stored Successfully!!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/processMetaDataResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Could not process MetaData. Please try again."
+                    }
+                }
+            }
+        },
+        "/genesis/rest/vcf/upload": {
+            "post": {
+                "tags": [
+                    "Variant"
+                ],
+                "description": "To Store Variant Information of VCF File",
+                "requestBody": {
+                    "required": true,
+                    "description": "Keep updating variantsRemaining value in subsequent calls. set rangeStart and rangeEnd to null in order to process all variants at once.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/uploadVCFRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Variants Stored Successfully!!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/uploadVCFResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Could not store variants. Please try again."
+                    }
+                }
+            }
+        },
+        "/genesis/rest/vcf/metadata/": {
+            "post": {
+                "tags": [
+                    "MetaData"
+                ],
+                "description": "To Get MetaData Information for particular reference.",
+                "requestBody": {
+                    "required": true,
+                    "description": "studyDb=databaseName+projectId | referenceName=chr1,chr2,etc.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/getMetaDataRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "MetaData Fetched Successfully!!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/getMetaDataResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Could not fetch  the MetaData. Please try again."
+                    }
+                }
+            }
+        },
+        "/genesis/rest/vcf/metadata/all": {
+            "get": {
+                "tags": [
+                    "MetaData"
+                ],
+                "description": "To Get All MetaData Information stored in Database.",
+                "parameter": {
+                    "required": false
+                    
+                },
+                "responses": {
+                    "200": {
+                        "description": "MetaData Fetched Successfully!!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/getAllMetaDataResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Could not fetch MetaData. Please try again."
+                    }
+                }
+            }
+        },
+        "/genesis/rest/vcf/variants": {
+            "post": {
+                "tags": [
+                    "Variant"
+                ],
+                "description": "To Get Single Variant Information.",
+                "requestBody": {
+                    "required": true,
+                    "description": "",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/getVariantRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "variant Fetched Successfully!!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/getVariantResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Could not fetch  the Variant. Please try again."
+                    }
+                }
+            }
+        },
+        "/genesis/rest/vcf/variants/all": {
+            "post": {
+                "tags": [
+                    "Variant"
+                ],
+                "description": "To Get all Variants.",
+                "requestBody": {
+                    "required": true,
+                    "description": "Set pageState=null in first call. In subsequent calls, set pageState to the value of last pageState received.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/getAllVariantRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Variants Fetched Successfully!!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/getAllVariantResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Could not fetch  Variants. Please try again."
+                    }
+                }
+            }
+        },
+        "/genesis/rest/brapi/v2/search/variantsets": {
+            "post": {
+                "tags": [
+                    "BRAPI"
+                ],
+                "description": "To Get all VariantSets.",
+                "requestBody": {
+                    "required": true,
+                    "description": "Accepts Empty Body",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/getVariantSetsRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Variantsets Fetched Successfully!!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/getVariantSetsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Could not fetch  Variantsets. Please try again."
+                    }
+                }
+            }
+        },
+        "/genesis/rest/brapi/v2/search/references": {
+            "post": {
+                "tags": [
+                    "BRAPI"
+                ],
+                "description": "To Get all References belonging to set of StudyDbIds.",
+                "requestBody": {
+                    "required": true,
+                    "description": "studyDbId=databaseName+projectId | References=Dataset=Chromosomes",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/searchReferencesRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "references Fetched Successfully!!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/searchReferencesResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Could not fetch References. Please try again."
+                    }
+                }
+            }
+        },
+        "/genesis/rest/brapi/v2/search/samples": {
+            "post": {
+                "tags": [
+                    "BRAPI"
+                ],
+                "description": "To Get all samples in a database.",
+                "requestBody": {
+                    "required": true,
+                    "description": "programDbId=databaseName",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/searchSamplesRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Samples Fetched Successfully!!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/searchSamplesResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Could not fetch Samples. Please try again."
+                    }
+                }
+            }
+        },
+        "/genesis/rest/brapi/v2/search/allelematrix": {
+            "post": {
+                "tags": [
+                    "BRAPI"
+                ],
+                "description": "To Get 2D Allelle Matrix.",
+                "requestBody": {
+                    "required": true,
+                    "description": "Contains either variantDbIds or positionRanges(remove one of them from request body).",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/alleleMatrixRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Allele Matrix Fetched Successfully!!",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/alleleMatrixResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Could not fetch Allele matrix. Please try again."
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "responses": {
+            "UnauthorizedError": {
+                "description": "Access token is missing or invalid"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        },
+        "schemas": {
+            "loginRequest": {
+                "properties": {
+                    "email": {
+                        "type": "string"
+                    },
+                    "password": {
+                        "type": "string"
+                    },
+                    "role": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "email": "genesis@gmail.com",
+                    "password": "Genesis123",
+                    "role": "Admin"
+                }
+            },
+            "loginResponse": {
+                "properties": {
+                    "metadata": {
+                        "type": "object"
+                    },
+                    "result": {
+                        "type": "object",
+                        "properties": {
+                            "token": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "status": {
+                        "type": "object",
+                        "properties": {
+                            "message": {
+                                "type": "string"
+                            },
+                            "statusCode": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "example": {
+                    "metadata": {},
+                    "result": {
+                        "token": "eyJhbGciOiJIUzI1NiIsadsasInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImdlbmVzaXNAZ21haWwuY29tIiwicm9sZSI6IkFkbWluIiwiaWF0IjoxNzE3MzI1Mjg5LCJleHAiOjE3MTc0MjUyODl9.RqVsUeqC0CkSLwJbeGIrpWi7XxjEgym3MVLpET6G89o"
+                    },
+                    "status": {
+                        "message": "logged in successfully!! ",
+                        "statusCode": "200"
+                    }
+                }
+            },
+            "processMetaDataRequest": {
+                "properties": {
+                    "fileName": {
+                        "type": "string"
+                    },
+                    "databaseName": {
+                        "type": "string"
+                    },
+                    "projectId": {
+                        "type": "string"
+                    },
+                    "referenceName": {
+                        "type": "string"
+                    },
+                    "isRemoteFile": {
+                        "type": "Boolean"
+                    }
+                },
+                "example": {
+                    "fileName": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_raw_GT_with_annot/20201028_CCDG_14151_B01_GRM_WGS_2020-08-05_chr2.recalibrated_variants.vcf.gz",
+                    "databaseName": "1000G_Test_DB",
+                    "projectId": "1",
+                    "referenceName": "chr2",
+                    "isRemoteFile": true
+                }
+            },
+            "processMetaDataResponse": {
+                "example": {
+                    "metadata": {},
+                    "result": {
+                        "totalVariants": 10607611,
+                        "databaseName": "1000G_Test_DB",
+                        "projectId": "1",
+                        "studyDbId": "1000G_Test_DB$1",
+                        "referenceName": "chr2",
+                        "variantCount": 0,
+                        "callSetCount": 0,
+                        "availableFormats": [
+                            {
+                                "dataFormat": "VCF",
+                                "fileFormat": "VCFv4.2",
+                                "fileURL": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_raw_GT_with_annot/20201028_CCDG_14151_B01_GRM_WGS_2020-08-05_chr2.recalibrated_variants.vcf.gz"
+                            }
+                        ],
+                        "metaInfo": {
+                            "INFO": {
+                                "AA": {
+                                    "Number": 1,
+                                    "Type": "String",
+                                    "Description": "Ancestral allele"
+                                },
+                                "AC": {
+                                    "Number": "A",
+                                    "Type": "Integer",
+                                    "Description": "Allele count in genotypes, for each ALT allele, in the same order as listed"
+                                },
+                                "INS:ME": {
+                                    "Description": "Insertion of a mobile element relative to the reference"
+                                },
+                                "NON_REF": {
+                                    "Description": "Represents any possible alternative allele at this location"
+                                },
+                                "*": {
+                                    "Description": "Represents any possible alternative allele at this location"
+                                }
+                            },
+                            "FILTER": {
+                                "PASS": {
+                                    "Description": "All filters passed (VQSR)"
+                                },
+                                "LowQual": {
+                                    "Description": "Low quality"
+                                },
+                                "VQSRTrancheINDEL99.00to100.00+": {
+                                    "Description": "Truth sensitivity tranche level for INDEL model at VQS Lod < -85077.1808"
+                                }
+                            },
+                            "fileformat": "VCFv4.2",
+                            "contig": {
+                                "chr1": {
+                                    "length": "248956422"
+                                },
+                                "chr2": {
+                                    "length": "242193529"
+                                },
+                                "HLA-DRB1*15:03:01:02": {
+                                    "length": "11569"
+                                },
+                                "HLA-DRB1*16:02:01": {
+                                    "length": "11005"
+                                }
+                            },
+                            "reference": "file:///gpfs/commons/datasets/old-nygc-resources/GRCh38_1000genomes/GRCh38_full_analysis_set_plus_decoy_hla.fa"
+                        }
+                    },
+                    "status": {
+                        "message": "VCF MetaData Processed Successfully!!",
+                        "statusCode": "200"
+                    }
+                }
+            },
+            "uploadVCFRequest": {
+                "properties": {
+                    "fileName": {
+                        "type": "string"
+                    },
+                    "chrom": {
+                        "type": "string"
+                    },
+                    "isRemoteFile": {
+                        "type": "Boolean"
+                    },
+                    "studyDbId": {
+                        "type": "string"
+                    },
+                    "rangeBegin": {
+                        "type": "number",
+                        "description": "Start of the range of variant POSITION to be processed"
+                    },
+                    "rangeEnd": {
+                        "type": "number",
+                        "description": "End of the range of variant POSITION to be processed"
+                    }
+                },
+                "example": {
+                    "fileName": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_raw_GT_with_annot/20201028_CCDG_14151_B01_GRM_WGS_2020-08-05_chr2.recalibrated_variants.vcf.gz",
+                    "chrom": "chr2",
+                    "isRemoteFile": true,
+                    "studyDbId": "1000G_Test_DB$1",
+                    "variantsRemaining": 10605998,
+                    "rangeBegin": 0,
+                    "rangeEnd": 12000
+                }
+            },
+            "uploadVCFResponse": {
+                "example": {
+                    "metadata": {},
+                    "result": {
+                        "variantsUploaded": 373,
+                        "variantsRemaining": 10605625,
+                        "lastVariant": {
+                            "studyDbId": "1000G_Test_DB$1",
+                            "databaseName": "1000G_Test_DB",
+                            "projectId": "1",
+                            "CHROM": "chr2",
+                            "POS": 11985,
+                            "ALT": [
+                                "G"
+                            ],
+                            "INFO": {
+                                "AC": [
+                                    1080
+                                ],
+                                "AF": [
+                                    0.168645
+                                ]
+                            },
+                            "REF": "C",
+                            "FILTER": "PASS",
+                            "ID": null,
+                            "QUAL": 647767,
+                            "SAMPLES": {
+                                "HG00096": "{\"GT\":[\"0/0\"],\"AB\":null,\"AD\":[33,0],\"DP\":[33],\"GQ\":[93],\"PGT\":null,\"PID\":null,\"PL\":[0,93,1237]}",
+                                "HG00097": "{\"GT\":[\"0/0\"],\"AB\":null,\"AD\":[25,0],\"DP\":[25],\"GQ\":[72],\"PGT\":null,\"PID\":null,\"PL\":[0,72,1080]}",
+                                "HG00099": "{\"GT\":[\"0/0\"],\"AB\":null,\"AD\":[37,0],\"DP\":[37],\"GQ\":[99],\"PGT\":null,\"PID\":null,\"PL\":[0,99,1280]}",
+                                "HG00100": "{\"GT\":[\"0/0\"],\"AB\":null,\"AD\":[34,0],\"DP\":[34],\"GQ\":[99],\"PGT\":null,\"PID\":null,\"PL\":[0,99,1162]}"
+                            }
+                        }
+                    },
+                    "status": {
+                        "message": "VCF Uploaded Successfully!!",
+                        "statusCode": "200"
+                    }
+                },
+                "status": {
+                    "message": "Marchent-Verification Agency Details Fetched Successfully!! ",
+                    "statusCode": "200"
+                }
+            },
+            "getMetaDataRequest": {
+                "properties": {
+                    "studyDbId": {
+                        "type": "string"
+                    },
+                    "referenceName": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "studyDbId": "1000G_Test_DB$1",
+                    "referenceName": "chr2"
+                }
+            },
+            "getMetaDataResponse": {
+                "example": {
+                    "metadata": {},
+                    "result": {
+                        "databaseName": "1000G_Test_DB",
+                        "projectId": "1",
+                        "studyDbId": "1000G_Test_DB$1",
+                        "referenceName": "chr2",
+                        "metaInfo": {
+                            "INFO": {
+                                "AA": {
+                                    "Number": 1,
+                                    "Type": "String",
+                                    "Description": "Ancestral allele"
+                                },
+                                "INS:ME": {
+                                    "Description": "Insertion of a mobile element relative to the reference"
+                                },
+                                "NON_REF": {
+                                    "Description": "Represents any possible alternative allele at this location"
+                                },
+                                "*": {
+                                    "Description": "Represents any possible alternative allele at this location"
+                                }
+                            },
+                            "FILTER": {
+                                "PASS": {
+                                    "Description": "All filters passed (VQSR)"
+                                },
+                                "LowQual": {
+                                    "Description": "Low quality"
+                                },
+                                "VQSRTrancheINDEL99.00to100.00+": {
+                                    "Description": "Truth sensitivity tranche level for INDEL model at VQS Lod < -85077.1808"
+                               }
+                            },
+                            "fileformat": "VCFv4.2",
+                            "contig": {
+                                "chr1": {
+                                    "length": "248956422"
+                                },
+                                "chr2": {
+                                    "length": "242193529"
+                                },
+                                "HLA-DRB1*16:02:01": {
+                                    "length": "11005"
+                                }
+                            },
+                            "reference": "file:///gpfs/commons/datasets/old-nygc-resources/GRCh38_1000genomes/GRCh38_full_analysis_set_plus_decoy_hla.fa"
+                        },
+                        "availableFormats": [
+                            "{\"dataFormat\":\"VCF\",\"fileFormat\":\"VCFv4.2\",\"fileURL\":\"https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_raw_GT_with_annot/20201028_CCDG_14151_B01_GRM_WGS_2020-08-05_chr2.recalibrated_variants.vcf.gz\"}"
+                        ],
+                        "variantCount": 1320,
+                        "callSetCount": 290
+                    },
+                    "status": {
+                        "message": "MetaData Fetched Successfully!!",
+                        "statusCode": "200"
+                    }
+                }
+            },
+            "getAllMetaDataResponse": {
+                "example": {
+                    "metadata": {},
+                    "result": [{
+                        "databaseName": "1000G_Test_DB",
+                        "projectId": "1",
+                        "studyDbId": "1000G_Test_DB$1",
+                        "referenceName": "chr2",
+                        "metaInfo": {
+                            "INFO": {
+                                "AA": {
+                                    "Number": 1,
+                                    "Type": "String",
+                                    "Description": "Ancestral allele"
+                                },
+                                "INS:ME": {
+                                    "Description": "Insertion of a mobile element relative to the reference"
+                                },
+                                "NON_REF": {
+                                    "Description": "Represents any possible alternative allele at this location"
+                                },
+                                "*": {
+                                    "Description": "Represents any possible alternative allele at this location"
+                                }
+                            },
+                            "FILTER": {
+                                "PASS": {
+                                    "Description": "All filters passed (VQSR)"
+                                },
+                                "LowQual": {
+                                    "Description": "Low quality"
+                                },
+                                "VQSRTrancheINDEL99.00to100.00+": {
+                                    "Description": "Truth sensitivity tranche level for INDEL model at VQS Lod < -85077.1808"
+                               }
+                            },
+                            "fileformat": "VCFv4.2",
+                            "contig": {
+                                "chr1": {
+                                    "length": "248956422"
+                                },
+                                "chr2": {
+                                    "length": "242193529"
+                                },
+                                "HLA-DRB1*16:02:01": {
+                                    "length": "11005"
+                                }
+                            },
+                            "reference": "file:///gpfs/commons/datasets/old-nygc-resources/GRCh38_1000genomes/GRCh38_full_analysis_set_plus_decoy_hla.fa"
+                        },
+                        "availableFormats": [
+                            "{\"dataFormat\":\"VCF\",\"fileFormat\":\"VCFv4.2\",\"fileURL\":\"https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_raw_GT_with_annot/20201028_CCDG_14151_B01_GRM_WGS_2020-08-05_chr2.recalibrated_variants.vcf.gz\"}"
+                        ],
+                        "variantCount": 1320,
+                        "callSetCount": 290
+                    }],
+                    "status": {
+                        "message": "MetaData Fetched Successfully!!",
+                        "statusCode": "200"
+                    }
+                }
+            },
+            "getVariantRequest": {
+                "properties": {
+                    "referenceName": {
+                        "type": "string"
+                    },
+                    "position": {
+                        "type": "Integer"
+                    },
+                    "studyDbId": {
+                        "type": "string"
+                    }
+                },
+                "example": {
+                    "referenceName":"chr2",
+                    "position":10206,
+                    "studyDbId": "1000G_Test_DB$1"
+                
+                }
+            },
+            "getVariantResponse": {
+                "example": {
+                    "metadata": {},
+                    "result": {
+                        "CHROM": "chr2",
+                        "POS": 10206,
+                        "ALT": [
+                            "A"
+                        ],
+                        "INFO": {
+                            "AC": [
+                                6
+                            ],
+                            "AF": [
+                                0.00167879
+                            ],
+                            "AC_Hom_AFR_unrel": [
+                                6
+                            ]
+                        },
+                        "REF": "AACCCT",
+                        "FILTER": [
+                            "VQSRTrancheINDEL99.00to100.00"
+                        ],
+                        "ID": null,
+                        "QUAL": 1114.010009765625,
+                        "SAMPLES": {
+                            "HG00096": "{\"GT\":[\"0/0\"],\"AD\":[4,0],\"DP\":[4],\"GQ\":[12],\"PGT\":null,\"PID\":null,\"PL\":[0,12,139]}",
+                            "HG00097": "{\"GT\":[\"0/0\"],\"AD\":[3,0],\"DP\":[3],\"GQ\":[3],\"PGT\":null,\"PID\":null,\"PL\":[0,3,45]}",
+                            "NA21144": "{\"GT\":[\"./.\"],\"AD\":[0,0],\"DP\":[0],\"GQ\":null,\"PGT\":null,\"PID\":null,\"PL\":null}"
+                        }
+                    },
+                    "status": {
+                        "message": "Variant Fetched Successfully!!",
+                        "statusCode": "200"
+                    }
+                }
+            },
+            "getAllVariantRequest": {
+                "properties": {
+                    "pageState": {
+                        "type": "string"
+                    },
+                    "fetchSize": {
+                        "type": "Integer"
+                    }
+                },
+                "example": {
+                    "pageState":"",
+                    "fetchSize":2000
+                }
+            },
+            "getAllVariantResponse": {
+                "example": {
+                    "metadata": {},
+                    "result": [{
+                        "CHROM": "chr2",
+                        "POS": 10206,
+                        "ALT": [
+                            "A"
+                        ],
+                        "INFO": {
+                            "AC": [
+                                6
+                            ],
+                            "AF": [
+                                0.00167879
+                            ],
+                            "AC_Hom_AFR_unrel": [
+                                6
+                            ]
+                        },
+                        "REF": "AACCCT",
+                        "FILTER": [
+                            "VQSRTrancheINDEL99.00to100.00"
+                        ],
+                        "ID": null,
+                        "QUAL": 1114.010009765625,
+                        "SAMPLES": {
+                            "HG00096": "{\"GT\":[\"0/0\"],\"AD\":[4,0],\"DP\":[4],\"GQ\":[12],\"PGT\":null,\"PID\":null,\"PL\":[0,12,139]}",
+                            "HG00097": "{\"GT\":[\"0/0\"],\"AD\":[3,0],\"DP\":[3],\"GQ\":[3],\"PGT\":null,\"PID\":null,\"PL\":[0,3,45]}",
+                            "NA21144": "{\"GT\":[\"./.\"],\"AD\":[0,0],\"DP\":[0],\"GQ\":null,\"PGT\":null,\"PID\":null,\"PL\":null}"
+                        }
+                    }],
+                    "status": {
+                        "message": "Variant Fetched Successfully!!",
+                        "statusCode": "200"
+                    }
+                }
+            },
+            "getVariantSetsRequest": {
+                "properties": {
+                    
+                },
+                "example": {
+                   
+                }
+            },
+            "getVariantSetsResponse": {
+                "example": {
+                    "metaData": {
+                        "pagination": {
+                            "pageSize": 2,
+                            "totalCount": 2,
+                            "totalPages": 1,
+                            "currentPage": 0
+                        }
+                    },
+                    "result": {
+                        "data": [
+                            {
+                                "availableFormats": [
+                                    {
+                                        "dataFormat": "VCF",
+                                        "fileFormat": "VCFv4.2",
+                                        "fileURL": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_raw_GT_with_annot/20201028_CCDG_14151_B01_GRM_WGS_2020-08-05_chr1.recalibrated_variants.vcf.gz"
+                                    }
+                                ],
+                                "callSetCount": 0,
+                                "referenceSetDbId": "1000G_Test_DB$1",
+                                "studyDbId": "1000G_Test_DB$1",
+                                "variantCount": 0,
+                                "variantSetDbId": "1000G_Test_DB$1$chr1",
+                                "variantSetName": "chr1",
+                                "metaFields": {
+                                    "INFO": {
+                                        "AA": {
+                                            "Number": 1,
+                                            "Type": "String",
+                                            "Description": "Ancestral allele"
+                                        },
+                                        "AC": {
+                                            "Number": "A",
+                                            "Type": "Integer",
+                                            "Description": "Allele count in genotypes, for each ALT allele, in the same order as listed"
+                                        }
+                                    },
+                                    "ALT": {
+                                        "DEL": {
+                                            "Description": "Deletion relative to the reference"
+                                        },
+                                        "INS": {
+                                            "Description": "Insertion of novel sequence relative to the reference"
+                                        }
+                                    },
+                                    "FILTER": {
+                                        "PASS": {
+                                            "Description": "All filters passed (VQSR)"
+                                        },
+                                        "LowQual": {
+                                            "Description": "Low quality"
+                                        }
+                                    },
+                                    "fileformat": "VCFv4.2",
+                                    "contig": {
+                                        "chr1": {
+                                            "length": "248956422"
+                                        },
+                                        "chr2": {
+                                            "length": "242193529"
+                                        },
+                                        "HLA-DRB1*15:03:01:01": {
+                                            "length": "11567"
+                                        },
+                                        "HLA-DRB1*15:03:01:02": {
+                                            "length": "11569"
+                                        },
+                                        "HLA-DRB1*16:02:01": {
+                                            "length": "11005"
+                                        }
+                                    },
+                                    "reference": "file:///gpfs/commons/datasets/old-nygc-resources/GRCh38_1000genomes/GRCh38_full_analysis_set_plus_decoy_hla.fa"
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "searchReferencesRequest": {
+                "properties": {
+                    "studyDbIds": {
+                        "type": "list<string>"
+                    }
+                },
+                "example": {
+                    "studyDbIds":["1000G_Test_DB$1"]
+                }
+            },
+            "searchReferencesResponse": {
+                "example": {
+                    "metaData": {
+                        "pagination": {
+                            "pageSize": 2,
+                            "totalCount": 2,
+                            "totalPages": 1,
+                            "currentPage": 0
+                        }
+                    },
+                    "result": {
+                        "data": [
+                            {
+                                "referenceDbId": "1000G_Test_DB$1$0$chr1",
+                                "referenceName": "chr1",
+                                "referenceSetDbId": "1000G_Test_DB$1$0"
+                            },
+                            {
+                                "referenceDbId": "1000G_Test_DB$1$0$chr2",
+                                "referenceName": "chr2",
+                                "referenceSetDbId": "1000G_Test_DB$1$0"
+                            }
+                        ]
+                    }
+                }
+            },
+            "searchSamplesRequest": {
+                "properties": {
+                    "programDbIds": {
+                        "type": "list<string>"
+                    }
+                },
+                "example": {
+                    "programDbIds": [
+                        "1000G_Test_DB"
+                    ]
+                }
+            },
+            "searchSamplesResponse": {
+                "example": {
+                    "metaData": {
+                        "pagination": {
+                            "pageSize": 3202,
+                            "totalCount": 3202,
+                            "totalPages": 1,
+                            "currentPage": 0
+                        }
+                    },
+                    "result": {
+                        "data": [
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$HG00096",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "HG00096-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$HG00097",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "HG00097-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$HG00099",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "HG00099-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21093",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21093-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21094",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21094-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21095",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21095-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21097",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21097-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21098",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21098-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21099",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21099-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21100",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21100-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21101",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21101-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21102",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21102-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21103",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21103-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21104",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21104-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21105",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21105-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21106",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21106-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21107",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21107-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21108",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21108-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21109",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21109-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21110",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21110-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21111",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21111-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21112",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21112-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21113",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21113-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21114",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21114-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21115",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21115-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21120",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21120-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21122",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21122-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21123",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21123-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21124",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21124-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            },
+                            {
+                                "additionalInfo": {},
+                                "germplasmDbId": "1000G_Test_DB$NA21141",
+                                "sampleDbId": "1000G_Test_DB$1",
+                                "sampleName": "NA21141-1-chr2",
+                                "studyDbId": "1000G_Test_DB$1"
+                            }
+                        ]
+                    }
+                }
+            },
+            "alleleMatrixRequest": {
+                "properties": {
+                    "callSetDbIds": {
+                        "type": "list<string>"
+                    },
+                    "variantSetDbId": {
+                        "type": "string"
+                    },
+                    "variantDbIds": {
+                        "type": "list<string>"
+                    },
+                    "positionRanges": [
+                        "chr2:10204-10206",
+                        "chr2:10214-40216"
+                    ],
+                    "dataMatrixAbbreviations": {
+                        "type": "list<string>"
+                    }
+                },
+                "example": {
+                    "callSetDbIds": [
+                        "1000G_Test_DB$HG00101",
+                        "1000G_Test_DB$HG00102"
+                            ],
+                    "variantSetDbId": "1000G_Test_DB$1$chr2",
+                    "variantDbIds": [
+                        "1000G_Test_DB$10206",
+                        "1000G_Test_DB$10216"
+                    ],
+                    "dataMatrixAbbreviations": [
+                        "GT",
+                        "GQ"
+                    ]
+                }
+            },
+            "alleleMatrixResponse": {
+                "example": {
+                    "metaData": {},
+                    "result": {
+                        "callSetDbIds": [
+                            "1000G_Test_DB$HG00101",
+                            "1000G_Test_DB$HG00102"
+                        ],
+                        "dataMatrices": [
+                            {
+                                "dataMatrix": [
+                                    [
+                                        "0/0",
+                                        "./."
+                                    ],
+                                    [
+                                        "0/0",
+                                        "./."
+                                    ]
+                                ],
+                                "dataMatrixAbbreviation": "GT",
+                                "dataMatrixName": "Genotype",
+                                "dataType": "String"
+                            },
+                            {
+                                "dataMatrix": [
+                                    [
+                                        9,
+                                        null
+                                    ],
+                                    [
+                                        0,
+                                        null
+                                    ]
+                                ],
+                                "dataMatrixAbbreviation": "GQ",
+                                "dataMatrixName": "Genotype Quality",
+                                "dataType": "Integer"
+                            }
+                        ],
+                        "pagination": [
+                            {
+                                "dimension": "VARIANTS",
+                                "page": 0,
+                                "pageSize": 2,
+                                "totalCount": 2,
+                                "totalPages": 1
+                            },
+                            {
+                                "dimension": "CALLSETS",
+                                "page": 0,
+                                "pageSize": 2,
+                                "totalCount": 2,
+                                "totalPages": 1
+                            }
+                        ],
+                        "sepPhased": "|",
+                        "sepUnphased": "/",
+                        "unknownString": ".",
+                        "variantDbIds": [
+                            [
+                                "1000G_Test_DB$10206",
+                                "1000G_Test_DB$10216"
+                            ]
+                        ],
+                        "variantSetDbIds": [
+                            "1000G_Test_DB$1$chr2"
+                        ]
+                    }
+                }
+            }
+        
+        }
+    },
+    "security": [
+        {
+            "bearerAuth": []
+        }
+    ]
+}
