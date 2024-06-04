@@ -109,7 +109,7 @@
                 }
             }
         },
-        "/genesis/rest/vcf/upload": {
+        "/genesis/rest/vcf/variant/process": {
             "post": {
                 "tags": [
                     "Variant"

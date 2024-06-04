@@ -8,7 +8,7 @@ module.exports = new Promise((resolve, reject) => {
                 contactPoints: ['127.0.0.1'],
                 localDataCenter: 'datacenter1',
                 protocolOptions: { port: 9042 },
-                keyspace: '1000G_Test_DB',
+                keyspace: 'genesis_keyspace',
                 queryOptions: {consistency: models.consistencies.one},
                 socketOptions: { readTimeout: 90000 },
                 pooling: {

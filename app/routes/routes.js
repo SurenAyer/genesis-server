@@ -8,7 +8,7 @@ function setUp(router, controllers) {
     //VCF
     
     router.post('/genesis/rest/vcf/metadata/process', auth.authenticate(), controllers.vcfController.processVCFMetaData);
-    router.post('/genesis/rest/vcf/upload', auth.authenticate(), controllers.vcfController.uploadVCF);
+    router.post('/genesis/rest/vcf/variant/process', auth.authenticate(), controllers.vcfController.uploadVCF);
     router.post('/genesis/rest/vcf/variants/all', auth.authenticate(), controllers.vcfController.getAllVariants);
     router.post('/genesis/rest/vcf/variants', auth.authenticate(), controllers.vcfController.getSingleVariant);
     router.post('/genesis/rest/vcf/metadata', auth.authenticate(), controllers.vcfController.getMetaData);

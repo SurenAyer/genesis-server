@@ -25,7 +25,6 @@ module.exports = {
         callSetCount : {
             type: "int"
         },
-        
     },
     key:["studyDbId","referenceName"]
 }

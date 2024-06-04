@@ -5,18 +5,15 @@ var logger = log4js.getLogger('Network Controller');
 
 const loginController = {
     login: login
-   };
-
-
+};
 //Normal Login
 function login(req, res) {
     var response = new Response();
     var userDetails = req.body;
-    //logger.info("userDetails is :===", userDetails);
     loginService.login(userDetails).then(function (token) {
         response.result.token = token;
         response.status.statusCode = '200';
-        response.status.message = 'logged in successfully!! ';
+        response.status.message = 'Logged in Successfully!! ';
         res.status(200).json(response);
     }).catch(function (err) {
         console.log("Got Error", err);
@@ -31,9 +28,4 @@ function login(req, res) {
         }
     })
 }
-
-
-
-
 module.exports = loginController;
-

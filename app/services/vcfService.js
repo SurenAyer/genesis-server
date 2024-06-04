@@ -14,7 +14,7 @@ const { RemoteFile } = require('generic-filehandle')
 const cassandra = require('cassandra-driver');
 const { log } = require("console");
 const client = new cassandra.Client({ contactPoints: ['localhost'], localDataCenter: 'datacenter1' });
-
+const keyspace = 'genesis_keyspace';
 let fetch;
 
 import('node-fetch').then(nodeFetch => {
@@ -40,6 +40,7 @@ var vcfService = {
 
 
 async function processVCFMetaData(fileInput) {
+    console.log("File Input", fileInput)
     let referenceName = fileInput.referenceName;
     let fileName = fileInput.fileName;
     let isRemoteFile = fileInput.isRemoteFile;
@@ -54,7 +55,7 @@ async function processVCFMetaData(fileInput) {
         let filePath = 'app/files/' + fileName;
         tbiIndexed = new TabixIndexedFile({ path: filePath });
     }
-
+    console.log("Reference Name", referenceName);
     const models = await modelsPromise;
     const MetaData = models.instance.MetaData;
     let response = {};
@@ -124,7 +125,6 @@ async function uploadVCF(fileDetails) {
     let projectId = studyDbId.split('$')[1];
     let fileName = fileDetails.fileName;
     let isRemoteFile = fileDetails.isRemoteFile;
-    console.log("File Details", fileDetails);
     let variantsRemaining = fileDetails.variantsRemaining;
     const rangeBegin = fileDetails.rangeBegin;
     const rangeEnd = fileDetails.rangeEnd;
@@ -149,8 +149,8 @@ async function uploadVCF(fileDetails) {
             const headerText = await tbiIndexed.getHeader();
             const tbiVCFParser = new VCF({ header: headerText });
             const variants = [];
-            let counter = 0;
-            let sampleCount = 0;
+            let processedVariantCounter = 0;
+            let errorVariantCounter = 0;
 
             console.log("Reading Variants");
             await tbiIndexed.getLines(chrom, rangeBegin, rangeEnd, line => {
@@ -180,14 +180,15 @@ async function uploadVCF(fileDetails) {
                     reject(error);
                 }
             });
-            // console.log("Saving Variants");
-            await async.eachLimit(variants, 1000, function (variantModel, callback) {
+            console.log("Saving Variants");
+            await async.eachLimit(variants, 5000, function (variantModel, callback) {
                 variantModel.save(function (err) {
                     if (err) {
+                        errorVariantCounter++;
                         console.log("Error in DB Save=" + err);
                         callback(err);
                     } else {
-                        counter++;
+                        processedVariantCounter++;
                         console.log('variant saved!');
                         callback();
                     }
@@ -196,42 +197,46 @@ async function uploadVCF(fileDetails) {
                 if (err) {
                     reject(err);
                 } else {
-                    response.variantsUploaded = counter;
-                    response.variantsRemaining = variantsRemaining - counter;
-                    let lastVariant = variants[variants.length - 1];
-                    lastVariant.INFO = JSON.parse(lastVariant.INFO);
-                    lastVariant.FILTER = JSON.parse(lastVariant.FILTER);
-                    lastVariant.SAMPLES = lastVariant.SAMPLES;
-                    response.lastVariant = lastVariant;
-                    resolve(response);
-                }
-            });
+                    if ((processedVariantCounter + errorVariantCounter) == variants.length) {
+                        console.log("Updating MetaData");
+                        //Find MetaData and update the variant count
+                        let metaData = {};
+                        MetaData.findOne({ studyDbId: studyDbId, referenceName: chrom }, function (err, metaDataDb) {
+                            if (err) {
+                                console.log(err);
+                                reject(err);
+                            } else {
+                                metaData = metaDataDb;
+                                metaData.variantCount = metaData.variantCount + processedVariantCounter;
+                                if (metaData.callSetCount == 0) {
+                                    let samples = variants[0].SAMPLES;
+                                    metaData.callSetCount = Object.keys(samples).length;
+                                }
+                                metaData.save(function (err) {
+                                    if (err) {
+                                        console.log(err);
+                                        reject(err);
+                                    }
+                                    console.log('Metadata saved!');
+                                    response.variantsUploaded = processedVariantCounter;
+                                    response.variantsRemaining = variantsRemaining - processedVariantCounter;
+                                    let lastVariant = variants[variants.length - 1];
+                                    lastVariant.INFO = JSON.parse(lastVariant.INFO);
+                                    lastVariant.FILTER = JSON.parse(lastVariant.FILTER);
+                                    lastVariant.SAMPLES = lastVariant.SAMPLES;
+                                    response.lastVariant = lastVariant;
+                                    resolve(response);
+                                });
+                            }
+                        });
 
-
-            console.log("Updating MetaData");
-            //Find MetaData and update the variant count
-            let metaData = {};
-            await MetaData.findOne({ studyDbId: studyDbId, referenceName: chrom }, function (err, metaDataDb) {
-                if (err) {
-                    console.log(err);
-                    reject(err);
-                } else {
-                    metaData = metaDataDb;
-                    metaData.variantCount = metaData.variantCount + counter;
-                    if (metaData.callSetCount == 0) {
-                        let samples = JSON.parse(variants[0].SAMPLES);
-                        metaData.callSetCount = Object.keys(samples).length;
                     }
-                    metaData.save(function (err) {
-                        if (err) {
-                            console.log(err);
-                            reject(err);
-                        }
-                        console.log('Metadata saved!');
-                        resolve(response);
-                    });
+
                 }
             });
+
+
+
 
 
         } catch (error) {
@@ -259,7 +264,7 @@ async function getAllVariants(input) {
                 FILTER: JSON.parse(row.FILTER),
                 ID: row.ID,
                 QUAL: row.QUAL,
-                SAMPLES: row.SAMPLES
+                //SAMPLES: JSON.stringify(row.SAMPLES)
             };
             //console.log("Variant", variant);
             variants.push(variant);
@@ -271,13 +276,12 @@ async function getAllVariants(input) {
                 console.log('variants fetched!', variants.length);
                 // store the next paging state
                 pageState = result.pageState;
-                resolve({
+                let responseData = {
                     retrievedVariants: variants.length,
                     pageState: pageState,
                     variants: variants
-
-
-                });
+                };
+                resolve(responseData);
             }
         });
     });
@@ -287,7 +291,7 @@ async function getSingleVariant(input) {
     const chrom = input.referenceName;
     const pos = parseInt(input.position);
     const studyDbId = input.studyDbId;
-    const databaseName=studyDbId.split('$')[0];
+    const databaseName = studyDbId.split('$')[0];
     const projectId = studyDbId.split('$')[1];
     console.log("Chrom", chrom);
     console.log("Pos", pos);
@@ -295,7 +299,7 @@ async function getSingleVariant(input) {
     const Variant = models.instance.Variant;
     return new Promise(async function (resolve, reject) {
         try {
-            Variant.findOne({ CHROM: chrom, POS: pos,databaseName:databaseName,projectId:projectId }, function (err, row) {
+            Variant.findOne({ CHROM: chrom, POS: pos, databaseName: databaseName, projectId: projectId }, function (err, row) {
                 if (err) {
                     console.log(err);
                     reject(err);
@@ -482,15 +486,13 @@ async function searchReferences(input) {
 
 async function searchSamples(input) {
     const models = await modelsPromise;
-    const MetaData = models.instance.MetaData;
-    const Variant = models.instance.Variant;
     let programDbIds = input.programDbIds;
     let responseData = [];
     return new Promise(async function (resolve, reject) {
         try {
             for (let programDbId of programDbIds) {
 
-                const query = 'SELECT DISTINCT "studyDbId" FROM "' + programDbId + '".MetaData;';
+                const query = 'SELECT DISTINCT "studyDbId" FROM "' + keyspace + '".MetaData;';
                 const result = await client.execute(query);
                 const studyDbIds = result.rows.map(row => row.studyDbId);
                 console.log('StudyDbIds Fetched!', studyDbIds);
@@ -516,7 +518,7 @@ async function searchSamples(input) {
                         console.log('DatabaseName', databaseName);
                         console.log('ProjectId', projectId);
                         //let firstRows = await Variant.findOne({ databaseName: databaseName, projectId: projectId }, "SAMPLES", { limit: 1 });
-                        const query = 'SELECT "SAMPLES", "CHROM" FROM "' + programDbId + '".Variant WHERE "databaseName" = ' + "'" + databaseName + "'" + ' AND "projectId" = ' + "'" + projectId + "'" + ' LIMIT 1 ALLOW FILTERING';
+                        const query = 'SELECT "SAMPLES", "CHROM" FROM "' + keyspace + '".Variant WHERE "databaseName" = ' + "'" + databaseName + "'" + ' AND "projectId" = ' + "'" + projectId + "'" + ' LIMIT 1 ALLOW FILTERING';
                         const result = await client.execute(query);
                         const samples = result.rows[0]['SAMPLES'];
                         const referenceName = result.rows[0]['CHROM'];
@@ -566,12 +568,13 @@ async function searchAlleleMatrix(input) {
     //let projectId;
     let chrom;
     let isRangeProvided = false;
-    let positionMap = new Map();
     const models = await modelsPromise;
     const MetaData = models.instance.MetaData;
     const Variant = models.instance.Variant;
-    let programDbIds = input.programDbIds;
     let positionRanges = input.positionRanges;
+    let totalRequestCount = 0;
+    let totalRanges = 0;
+    console.log("Total Request Count", totalRequestCount);
     let formatMap;
     let variantCounts = 0;
 
@@ -579,14 +582,13 @@ async function searchAlleleMatrix(input) {
 
         variantDbIds = input.variantDbIds;
         databaseName = variantSetDbId.split('$')[0];
-        //projectId=variantSetDbId.split('$')[1];
         chrom = variantSetDbId.split('$')[2];
     }
     else {
         isRangeProvided = true;
         databaseName = variantSetDbId.split('$')[0];
-    }
-    let alleleMatrix = [];
+        totalRanges = positionRanges.length;
+     }
     let alleleMap = new Map();
     for (let abbr of dataMatrixAbbreviations) {
         alleleMap.set(abbr, []);
@@ -594,17 +596,13 @@ async function searchAlleleMatrix(input) {
     let responseData = {
         callSetDbIds: callSetDbIds,
         dataMatrices: [],
-        pagination:[],
+        pagination: [],
         sepPhased: "|",
         sepUnphased: "/",
         unknownString: ".",
         variantDbIds: [],
         variantSetDbIds: [variantSetDbId]
-
-
     }
-
-
     return new Promise(async function (resolve, reject) {
         try {
             let studyDbId = variantSetDbId.split('$')[0] + '$' + variantSetDbId.split('$')[1];
@@ -614,7 +612,7 @@ async function searchAlleleMatrix(input) {
                     reject(err);
                 } else {
                     formatMap = new Map(Object.entries(JSON.parse(result.metaInfo).FORMAT));
-                  }
+                }
             });
             //Start processing
             console.log("Processing Allele Matrix", isRangeProvided);
@@ -670,24 +668,24 @@ async function searchAlleleMatrix(input) {
                                 }
                                 responseData.variantDbIds.push(variantDbIds);
                                 let variantCount = variantDbIds.length;
-                                let paginationVariant={
-                                    dimension: "VARIANTS", 
-                                    page: 0, 
-                                    pageSize: variantCount, 
-                                    totalCount: variantCount, 
+                                let paginationVariant = {
+                                    dimension: "VARIANTS",
+                                    page: 0,
+                                    pageSize: variantCount,
+                                    totalCount: variantCount,
                                     totalPages: 1
                                 }
                                 responseData.pagination.push(paginationVariant);
                                 let callSetCount = callSetDbIds.length;
-                                let paginationCallSet={
-                                    dimension: "CALLSETS", 
-                                    page: 0, 
-                                    pageSize: callSetCount, 
-                                    totalCount: callSetCount, 
+                                let paginationCallSet = {
+                                    dimension: "CALLSETS",
+                                    page: 0,
+                                    pageSize: callSetCount,
+                                    totalCount: callSetCount,
                                     totalPages: 1
                                 }
                                 responseData.pagination.push(paginationCallSet);
-                                
+
                                 let response = new Response();
                                 response.metaData = {};
                                 response.result = responseData;
@@ -710,11 +708,15 @@ async function searchAlleleMatrix(input) {
                     let chrom = range.split(':')[0];
                     let start = range.split(':')[1].split('-')[0];
                     let end = range.split(':')[1].split('-')[1];
-                    let query = 'SELECT "SAMPLES", "POS" FROM "' + databaseName + '".Variant WHERE "CHROM" = \'' + chrom + '\' AND "databaseName" = \'' + databaseName + '\' AND "POS" >= ' + parseInt(start) + ' AND "POS" <= ' + parseInt(end) + ' ALLOW FILTERING';
+                    let query = 'SELECT "SAMPLES", "POS" FROM "' + keyspace + '".Variant WHERE "CHROM" = \'' + chrom + '\' AND "databaseName" = \'' + databaseName + '\' AND "POS" >= ' + parseInt(start) + ' AND "POS" <= ' + parseInt(end) + ' ALLOW FILTERING';
                     const result = await client.execute(query);
                     const rows = result.rows;
+                    console.log("Rows of " + chrom, rows.length);
+                    variantCounts +=  rows.length;
                     for (let row of rows) {
-                        variantCounts++;
+                       try{
+                        //variantCounts++;
+                        processedCount++;
                         let samplesMap = new Map();
                         samplesMap = row['SAMPLES'];
                         let variantDbId = databaseName + "$" + row['POS'];
@@ -737,11 +739,16 @@ async function searchAlleleMatrix(input) {
                                 alleleRow.get(abbr).push(alleleData);
                             }
                         }
-                        processedCount++;
+
                         for (let abbr of dataMatrixAbbreviations) {
                             alleleMap.get(abbr).push(alleleRow.get(abbr));
                         }
-                        if (processedCount === positionRanges.length) {
+                        // console.log("Checking");
+                        // console.log("end", end);
+                        // console.log("actual end", positionRanges[positionRanges.length - 1].split(':')[1].split('-')[1]);
+
+                        if (end === positionRanges[positionRanges.length - 1].split(':')[1].split('-')[1] && processedCount == variantCounts) {
+                            console.log("Supposed to Print Once");
                             for (let abbr of alleleMap.keys()) {
                                 let dataMatrixResponse = {
                                     dataMatrix: alleleMap.get(abbr),
@@ -751,21 +758,21 @@ async function searchAlleleMatrix(input) {
                                 }
                                 responseData.dataMatrices.push(dataMatrixResponse);
                             }
-                            let paginationVariant={
-                                dimension: "VARIANTS", 
-                                page: 0, 
-                                pageSize: variantCounts, 
-                                totalCount: variantCounts, 
+                            let paginationVariant = {
+                                dimension: "VARIANTS",
+                                page: 0,
+                                pageSize: variantCounts,
+                                totalCount: variantCounts,
                                 totalPages: 1
                             }
                             responseData.pagination.push(paginationVariant);
 
                             let callSetCount = callSetDbIds.length;
-                            let paginationCallSet={
-                                dimension: "CALLSETS", 
-                                page: 0, 
-                                pageSize: callSetCount, 
-                                totalCount: callSetCount, 
+                            let paginationCallSet = {
+                                dimension: "CALLSETS",
+                                page: 0,
+                                pageSize: callSetCount,
+                                totalCount: callSetCount,
                                 totalPages: 1
                             }
                             responseData.pagination.push(paginationCallSet);
@@ -774,9 +781,14 @@ async function searchAlleleMatrix(input) {
                             response.result = responseData;
                             resolve(response);
                         }
+                    } catch (error) {
+                        console.log("Error in processing range", error);
+                        reject(error);
                     }
 
-                }
+                    }
+                    }
+                
 
             }
         } catch (err) {

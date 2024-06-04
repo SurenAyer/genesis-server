@@ -2,6 +2,7 @@ dist/
 npm-debug.log
 .project
 logs
+app/files
 coverage
 jsconfig.json
 .vscode
