@@ -496,29 +496,29 @@
                     }
                 },
                 "example": {
-                    "fileName": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_raw_GT_with_annot/20201028_CCDG_14151_B01_GRM_WGS_2020-08-05_chr2.recalibrated_variants.vcf.gz",
-                    "databaseName": "1000G_Test_DB",
-                    "projectId": "1",
-                    "referenceName": "chr2",
-                    "isRemoteFile": true
+                    "fileName":"Ta_PRJEB31218_IWGSC-RefSeq-v1.0_filtered-SNPs.chr4D.vcf.gz",
+                    "databaseName":"AGG_test_wheat",
+                    "projectId":"1",
+                    "referenceName":"chr4D",
+                    "isRemoteFile":false
                 }
             },
             "processMetaDataResponse": {
                 "example": {
                     "metadata": {},
                     "result": {
-                        "totalVariants": 10607611,
-                        "databaseName": "1000G_Test_DB",
+                        "totalVariants": 27018,
+                        "databaseName": "AGG_test_wheat",
                         "projectId": "1",
-                        "studyDbId": "1000G_Test_DB$1",
-                        "referenceName": "chr2",
+                        "studyDbId": "AGG_test_wheat$1",
+                        "referenceName": "chr4D",
                         "variantCount": 0,
                         "callSetCount": 0,
                         "availableFormats": [
                             {
                                 "dataFormat": "VCF",
-                                "fileFormat": "VCFv4.2",
-                                "fileURL": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_raw_GT_with_annot/20201028_CCDG_14151_B01_GRM_WGS_2020-08-05_chr2.recalibrated_variants.vcf.gz"
+                                "fileFormat": "VCFv4.1",
+                                "fileURL": "Ta_PRJEB31218_IWGSC-RefSeq-v1.0_filtered-SNPs.chr4D.vcf.gz"
                             }
                         ],
                         "metaInfo": {
@@ -529,9 +529,345 @@
                                     "Description": "Ancestral allele"
                                 },
                                 "AC": {
+                                    "Number": 1,
+                                    "Type": "Integer",
+                                    "Description": "Allele Count"
+                                },
+                                "AD": {
+                                    "Number": "R",
+                                    "Type": "Integer",
+                                    "Description": "Total read depth for each allele"
+                                },
+                                "ADF": {
+                                    "Number": "R",
+                                    "Type": "Integer",
+                                    "Description": "Read depth for each allele on the forward strand"
+                                },
+                                "ADR": {
+                                    "Number": "R",
+                                    "Type": "Integer",
+                                    "Description": "Read depth for each allele on the reverse strand"
+                                },
+                                "AF": {
+                                    "Number": "A",
+                                    "Type": "Float",
+                                    "Description": "Allele frequency for each ALT allele in the same order as listed (estimated from primary data, not called genotypes)"
+                                },
+                                "AN": {
+                                    "Number": 1,
+                                    "Type": "Integer",
+                                    "Description": "Allele Number"
+                                },
+                                "BQ": {
+                                    "Number": 1,
+                                    "Type": "Float",
+                                    "Description": "RMS base quality"
+                                },
+                                "CIGAR": {
+                                    "Number": 1,
+                                    "Type": "Float",
+                                    "Description": "Cigar string describing how to align an alternate allele to the reference allele"
+                                },
+                                "DB": {
+                                    "Number": 0,
+                                    "Type": "Flag",
+                                    "Description": "dbSNP membership"
+                                },
+                                "DP": {
+                                    "Number": 1,
+                                    "Type": "Integer",
+                                    "Description": "combined depth across samples"
+                                },
+                                "END": {
+                                    "Number": 1,
+                                    "Type": "Integer",
+                                    "Description": "End position (for use with symbolic alleles)"
+                                },
+                                "H2": {
+                                    "Number": 0,
+                                    "Type": "Flag",
+                                    "Description": "HapMap2 membership"
+                                },
+                                "H3": {
+                                    "Number": 0,
+                                    "Type": "Flag",
+                                    "Description": "HapMap3 membership"
+                                },
+                                "MQ": {
+                                    "Number": 1,
+                                    "Type": null,
+                                    "Description": "RMS mapping quality"
+                                },
+                                "MQ0": {
+                                    "Number": 1,
+                                    "Type": "Integer",
+                                    "Description": "Number of MAPQ == 0 reads"
+                                },
+                                "NS": {
+                                    "Number": 1,
+                                    "Type": "Integer",
+                                    "Description": "Number of Samples With Data"
+                                },
+                                "SB": {
+                                    "Number": 4,
+                                    "Type": "Integer",
+                                    "Description": "Strand bias"
+                                },
+                                "SOMATIC": {
+                                    "Number": 0,
+                                    "Type": "Flag",
+                                    "Description": "Somatic mutation (for cancer genomics)"
+                                },
+                                "VALIDATED": {
+                                    "Number": 0,
+                                    "Type": "Flag",
+                                    "Description": "Validated by follow-up experiment"
+                                },
+                                "1000G": {
+                                    "Number": 0,
+                                    "Type": "Flag",
+                                    "Description": "1000 Genomes membership"
+                                },
+                                "IMPRECISE": {
+                                    "Number": 0,
+                                    "Type": "Flag",
+                                    "Description": "Imprecise structural variation"
+                                },
+                                "NOVEL": {
+                                    "Number": 0,
+                                    "Type": "Flag",
+                                    "Description": "Indicates a novel structural variation"
+                                },
+                                "SVTYPE": {
+                                    "Number": 1,
+                                    "Type": "String",
+                                    "Description": "Type of structural variant"
+                                },
+                                "SVLEN": {
+                                    "Number": null,
+                                    "Type": "Integer",
+                                    "Description": "Difference in length between REF and ALT alleles"
+                                },
+                                "CIPOS": {
+                                    "Number": 2,
+                                    "Type": "Integer",
+                                    "Description": "Confidence interval around POS for imprecise variants"
+                                },
+                                "CIEND": {
+                                    "Number": 2,
+                                    "Type": "Integer",
+                                    "Description": "Confidence interval around END for imprecise variants"
+                                },
+                                "HOMLEN": {
+                                    "Type": "Integer",
+                                    "Description": "Length of base pair identical micro-homology at event breakpoints"
+                                },
+                                "HOMSEQ": {
+                                    "Type": "String",
+                                    "Description": "Sequence of base pair identical micro-homology at event breakpoints"
+                                },
+                                "BKPTID": {
+                                    "Type": "String",
+                                    "Description": "ID of the assembled alternate allele in the assembly file"
+                                },
+                                "MEINFO": {
+                                    "Number": 4,
+                                    "Type": "String",
+                                    "Description": "Mobile element info of the form NAME,START,END,POLARITY"
+                                },
+                                "METRANS": {
+                                    "Number": 4,
+                                    "Type": "String",
+                                    "Description": "Mobile element transduction info of the form CHR,START,END,POLARITY"
+                                },
+                                "DGVID": {
+                                    "Number": 1,
+                                    "Type": "String",
+                                    "Description": "ID of this element in Database of Genomic Variation"
+                                },
+                                "DBVARID": {
+                                    "Number": 1,
+                                    "Type": "String",
+                                    "Description": "ID of this element in DBVAR"
+                                },
+                                "DBRIPID": {
+                                    "Number": 1,
+                                    "Type": "String",
+                                    "Description": "ID of this element in DBRIP"
+                                },
+                                "MATEID": {
+                                    "Number": null,
+                                    "Type": "String",
+                                    "Description": "ID of mate breakends"
+                                },
+                                "PARID": {
+                                    "Number": 1,
+                                    "Type": "String",
+                                    "Description": "ID of partner breakend"
+                                },
+                                "EVENT": {
+                                    "Number": 1,
+                                    "Type": "String",
+                                    "Description": "ID of event associated to breakend"
+                                },
+                                "CILEN": {
+                                    "Number": 2,
+                                    "Type": "Integer",
+                                    "Description": "Confidence interval around the inserted material between breakend"
+                                },
+                                "DPADJ": {
+                                    "Type": "Integer",
+                                    "Description": "Read Depth of adjacency"
+                                },
+                                "CN": {
+                                    "Number": 1,
+                                    "Type": "Integer",
+                                    "Description": "Copy number of segment containing breakend"
+                                },
+                                "CNADJ": {
+                                    "Number": null,
+                                    "Type": "Integer",
+                                    "Description": "Copy number of adjacency"
+                                },
+                                "CICN": {
+                                    "Number": 2,
+                                    "Type": "Integer",
+                                    "Description": "Confidence interval around copy number for the segment"
+                                },
+                                "CICNADJ": {
+                                    "Number": null,
+                                    "Type": "Integer",
+                                    "Description": "Confidence interval around copy number for the adjacency"
+                                },
+                                "AC_Het": {
                                     "Number": "A",
                                     "Type": "Integer",
-                                    "Description": "Allele count in genotypes, for each ALT allele, in the same order as listed"
+                                    "Description": "Allele counts in heterozygous genotypes"
+                                },
+                                "MAF": {
+                                    "Number": "A",
+                                    "Type": "Float",
+                                    "Description": "Minor Allele frequency"
+                                },
+                                "tSNP": {
+                                    "Number": 1,
+                                    "Type": "Integer",
+                                    "Description": "tSNP set ID"
+                                },
+                                "pass": {
+                                    "Number": 1,
+                                    "Type": "String",
+                                    "Description": "Passing all filters"
+                                },
+                                "passRelaxed": {
+                                    "Number": 1,
+                                    "Type": "String",
+                                    "Description": "Passing relaxed filters"
+                                },
+                                "selected": {
+                                    "Number": 1,
+                                    "Type": "String",
+                                    "Description": "Selected for inclusion on Wheat Barley 40k array"
+                                }
+                            },
+                            "FORMAT": {
+                                "AD": {
+                                    "Number": "R",
+                                    "Type": "Integer",
+                                    "Description": "Read depth for each allele"
+                                },
+                                "ADF": {
+                                    "Number": "R",
+                                    "Type": "Integer",
+                                    "Description": "Read depth for each allele on the forward strand"
+                                },
+                                "ADR": {
+                                    "Number": "R",
+                                    "Type": "Integer",
+                                    "Description": "Read depth for each allele on the reverse strand"
+                                },
+                                "DP": {
+                                    "Number": 1,
+                                    "Type": "Integer",
+                                    "Description": "Read Depth"
+                                },
+                                "EC": {
+                                    "Number": "A",
+                                    "Type": "Integer",
+                                    "Description": "Expected alternate allele counts"
+                                },
+                                "FT": {
+                                    "Number": 1,
+                                    "Type": "String",
+                                    "Description": "Filter indicating if this genotype was \"called\""
+                                },
+                                "GL": {
+                                    "Number": "G",
+                                    "Type": "Float",
+                                    "Description": "Genotype Probabilities as p(AA),p(AB),p(BB)"
+                                },
+                                "GP": {
+                                    "Number": "G",
+                                    "Type": "Float",
+                                    "Description": "Genotype posterior probabilities"
+                                },
+                                "GQ": {
+                                    "Number": 1,
+                                    "Type": "Integer",
+                                    "Description": "Conditional genotype quality"
+                                },
+                                "GT": {
+                                    "Number": 1,
+                                    "Type": "String",
+                                    "Description": "Genotype as 0/1"
+                                },
+                                "HQ": {
+                                    "Number": 2,
+                                    "Type": "Integer",
+                                    "Description": "Haplotype quality"
+                                },
+                                "MQ": {
+                                    "Number": 1,
+                                    "Type": "Integer",
+                                    "Description": "RMS mapping quality"
+                                },
+                                "PL": {
+                                    "Number": "G",
+                                    "Type": "Integer",
+                                    "Description": "Phred-scaled genotype likelihoods rounded to the closest integer"
+                                },
+                                "PQ": {
+                                    "Number": 1,
+                                    "Type": "Integer",
+                                    "Description": "Phasing quality"
+                                },
+                                "PS": {
+                                    "Number": 1,
+                                    "Type": "Integer",
+                                    "Description": "Phase set"
+                                }
+                            },
+                            "ALT": {
+                                "DEL": {
+                                    "Description": "Deletion relative to the reference"
+                                },
+                                "INS": {
+                                    "Description": "Insertion of novel sequence relative to the reference"
+                                },
+                                "DUP": {
+                                    "Description": "Region of elevated copy number relative to the reference"
+                                },
+                                "INV": {
+                                    "Description": "Inversion of reference sequence"
+                                },
+                                "CNV": {
+                                    "Description": "Copy number variable region (may be both deletion and duplication)"
+                                },
+                                "DUP:TANDEM": {
+                                    "Description": "Tandem duplication"
+                                },
+                                "DEL:ME": {
+                                    "Description": "Deletion of mobile element relative to the reference"
                                 },
                                 "INS:ME": {
                                     "Description": "Insertion of a mobile element relative to the reference"
@@ -545,31 +881,38 @@
                             },
                             "FILTER": {
                                 "PASS": {
-                                    "Description": "All filters passed (VQSR)"
-                                },
-                                "LowQual": {
-                                    "Description": "Low quality"
-                                },
-                                "VQSRTrancheINDEL99.00to100.00+": {
-                                    "Description": "Truth sensitivity tranche level for INDEL model at VQS Lod < -85077.1808"
+                                    "Description": "All filters passed"
                                 }
                             },
-                            "fileformat": "VCFv4.2",
+                            "fileformat": "VCFv4.1",
+                            "phasing": "none",
+                            "reference": "161010_Chinese_Spring_v1.0_pseudomolecules.fasta",
                             "contig": {
-                                "chr1": {
-                                    "length": "248956422"
-                                },
-                                "chr2": {
-                                    "length": "242193529"
-                                },
-                                "HLA-DRB1*15:03:01:02": {
-                                    "length": "11569"
-                                },
-                                "HLA-DRB1*16:02:01": {
-                                    "length": "11005"
-                                }
+                                "chr1A": {},
+                                "chr1B": {},
+                                "chr1D": {},
+                                "chr2A": {},
+                                "chr2B": {},
+                                "chr2D": {},
+                                "chr3A": {},
+                                "chr3B": {},
+                                "chr3D": {},
+                                "chr4A": {},
+                                "chr4B": {},
+                                "chr4D": {},
+                                "chr5A": {},
+                                "chr5B": {},
+                                "chr5D": {},
+                                "chr6A": {},
+                                "chr6B": {},
+                                "chr6D": {},
+                                "chr7A": {},
+                                "chr7B": {},
+                                "chr7D": {},
+                                "chrUn": {}
                             },
-                            "reference": "file:///gpfs/commons/datasets/old-nygc-resources/GRCh38_1000genomes/GRCh38_full_analysis_set_plus_decoy_hla.fa"
+                            "bcftools_viewVersion": "1.12+htslib-1.12",
+                            "bcftools_viewCommand": "view -r chr4D -Oz -o Ta_PRJEB31218_IWGSC-RefSeq-v1.0_filtered-SNPs.chr4D.vcf.gz Ta_PRJEB31218_IWGSC-RefSeq-v1.0_filtered-SNPs.vcf.gz; Date=Fri Jul 23 20:10:15 2021"
                         }
                     },
                     "status": {
@@ -602,13 +945,13 @@
                     }
                 },
                 "example": {
-                    "fileName": "https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_raw_GT_with_annot/20201028_CCDG_14151_B01_GRM_WGS_2020-08-05_chr2.recalibrated_variants.vcf.gz",
-                    "chrom": "chr2",
-                    "isRemoteFile": true,
-                    "studyDbId": "1000G_Test_DB$1",
-                    "variantsRemaining": 10605998,
+                    "fileName": "Ta_PRJEB31218_IWGSC-RefSeq-v1.0_filtered-SNPs.chr4D.vcf.gz",
+                    "chrom": "chr4D",
+                    "isRemoteFile": false,
+                    "studyDbId": "AGG_test_wheat$1",
+                    "variantsRemaining": 27018,
                     "rangeBegin": 0,
-                    "rangeEnd": 12000
+                    "rangeEnd": 50000000
                 }
             },
             "uploadVCFResponse": {
@@ -666,8 +1009,8 @@
                     }
                 },
                 "example": {
-                    "studyDbId": "1000G_Test_DB$1",
-                    "referenceName": "chr2"
+                    "studyDbId": "AGG_test_wheat$1",
+                    "referenceName":"chr1D"
                 }
             },
             "getMetaDataResponse": {
@@ -807,10 +1150,9 @@
                     }
                 },
                 "example": {
-                    "referenceName":"chr2",
-                    "position":10206,
-                    "studyDbId": "1000G_Test_DB$1"
-                
+                    "referenceName":"chr1D",
+                    "position":47463,
+                    "studyDbId": "AGG_test_wheat$1"
                 }
             },
             "getVariantResponse": {
@@ -998,7 +1340,7 @@
                     }
                 },
                 "example": {
-                    "studyDbIds":["1000G_Test_DB$1"]
+                    "studyDbIds":["AGG_test_wheat$1"]
                 }
             },
             "searchReferencesResponse": {
@@ -1035,7 +1377,7 @@
                 },
                 "example": {
                     "programDbIds": [
-                        "1000G_Test_DB"
+                        "AGG_test_wheat"
                     ]
                 }
             },
@@ -1286,17 +1628,20 @@
                 },
                 "example": {
                     "callSetDbIds": [
-                        "1000G_Test_DB$HG00101",
-                        "1000G_Test_DB$HG00102"
+                        "AGG_test_wheat$ExomeCapture-DAS5-001002",
+                        "AGG_test_wheat$ExomeCapture-DAS5-001007"
                             ],
-                    "variantSetDbId": "1000G_Test_DB$1$chr2",
+                    "variantSetDbId": "AGG_test_wheat$1$chr1D",
                     "variantDbIds": [
-                        "1000G_Test_DB$10206",
-                        "1000G_Test_DB$10216"
+                        "AGG_test_wheat$47463",
+                        "AGG_test_wheat$47466"
+                    ],
+                    "positionRanges": [
+                        "chr1D:0-100000",
+                        "chr4D:40000-1100000"
                     ],
                     "dataMatrixAbbreviations": [
-                        "GT",
-                        "GQ"
+                        "GT"
                     ]
                 }
             },
