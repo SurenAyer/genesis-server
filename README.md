@@ -22,7 +22,7 @@ Genesis-Server is a scalable and high-performance server designed for managing g
 
 1. **Clone the repository**
    ```sh
-   git clone https://github.com/yourusername/Genesis-Server.git
+   git clone https://github.com/SurenAyer/genesis-server.git
    cd Genesis-Server
 2. **Install dependencies**
    ```sh
